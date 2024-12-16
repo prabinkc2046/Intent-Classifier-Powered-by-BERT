@@ -1,8 +1,14 @@
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from transformers import pipeline
 
+# Fetch host and port from environment variables
+host ="0.0.0.0"
+port = 8000  # Default to 8000 if not specified
+
+print("env var", host, port)
 # Define a request body schema
 class TextInput(BaseModel):
     text: str
@@ -27,7 +33,7 @@ intents = [
 ]
 
 # Load your fine-tuned model and tokenizer
-model_path = "intent_classifier_model"  # Path to your saved model
+model_path = "./intent_classifier_model"  # Path to your saved model
 classifier = pipeline("text-classification", model=model_path)
 
 @app.get("/")
@@ -65,4 +71,4 @@ def classify_text(input: TextInput):
 # Entry point to run the app with uvicorn
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app:app", host=host, port=port, reload=True)
